@@ -1,0 +1,183 @@
+openapi: 3.0.0
+servers:
+  - url: https://api.rbclean.xyz
+    description: API server
+info:
+  description: |
+    SImple laundry service REST api
+  version: 1.0.0
+  title: RB CLEAN
+tags:
+
+security:
+  - {}
+
+paths:
+  /auth/register:
+    post:
+      description: Register new user
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  $ref: '#/components/schemas/User'  
+      responses:
+        '201':
+          description: User registered succesfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+  /auth/login:
+    post:
+        description: Login a user
+        operationId: loginUser
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    email:
+                      description: email of the user
+                      type: string
+                      format: email
+                      example: john.smith@example.com
+                    password:
+                      description: the user's password
+                      type: string 
+        responses:
+          '200':
+            description: User logged in succesfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+          '400':
+            description: Bad request
+  /auth/forgot-password:
+    post:
+        description: Request a password reset token/link
+        operationId: forgotPassword
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    email:
+                      description: email of the user
+                      type: string
+                      format: email
+                      example: john.smith@example.com
+        responses:
+          '202':
+            description: Reset password token sent
+          '400':
+            description: Bad request
+  /auth/reset-password:
+    post:
+        description: Reset the password of a user
+        operationId: resetPassword
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    nonce:
+                      description: authorization token
+                      type: string
+                    password:
+                      description: the user's new password
+                      type: string 
+        responses:
+          '301':
+            description: Redirect to login page
+          '400':
+            description: Bad request
+  /auth/verify-email:
+    post:
+        description: Verify email address
+        operationId: verifyEmail
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    nonce:
+                      description: authorization token
+                      type: string
+        responses:
+          '200':
+            description: verified
+          '400':
+            description: Bad request
+  /auth/2fa:
+    post:
+        description: Multifactor authentication
+        operationId: 2fa
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    shortCode:
+                      description: 6 digit alfanumeric 2fa code
+                      type: string
+        responses:
+          '200':
+            description: verified
+          '401':
+            description: Unauthorized
+
+components:
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+    User:
+      description: A user of our system
+      type: object
+      properties:
+        email:
+          type: string
+          required: false
+        password:
+          type: string
+          required: false
+        name:
+          type: string
+        role:
+          type: string
+          enum:
+            - CLIENT
+            - ADMIN
+        joinedAt:
+          type: datetime
+        phoneNumber:
+          type: string 
+        pictureUrl:
+          type: string
+        address:
+          type: string
