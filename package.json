@@ -1,0 +1,21 @@
+{
+  "name": "rb-clean-infra",
+  "version": "1.0.0",
+  "description": "Api specification for rb-clean",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:html": "npx @redocly/cli build-docs ./api-spec/rbclean.yaml",
+    "dev": "npx @redocly/cli preview-docs ./api-spec/rbclean.yaml",
+    "lint": "npx @redocly/cli lint ./api-spec/rbclean.yaml"
+  },
+  "keywords": [
+    "rb-clearn",
+    "laundary-service",
+    "laundary-app",
+    "rebase",
+    "rebase-academy"
+  ],
+  "author": "rebase system design 2024 team",
+  "license": "ISC"
+}

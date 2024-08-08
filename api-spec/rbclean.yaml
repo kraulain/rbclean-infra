@@ -7,7 +7,6 @@ info:
     SImple laundry service REST api
   version: 1.0.0
   title: RB CLEAN
-tags:
 
 security:
   - {}
@@ -15,6 +14,8 @@ security:
 paths:
   /auth/register:
     post:
+      tags:
+        - Auth # see read me for all the list of tags
       description: Register new user
       operationId: registerUser
       requestBody:
@@ -34,115 +35,130 @@ paths:
                 $ref: '#/components/schemas/User'
         '400':
           description: Bad request
+
   /auth/login:
     post:
-        description: Login a user
-        operationId: loginUser
-        requestBody:
+      tags:
+        - Auth
+      description: Login a user
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  email:
+                    description: email of the user
+                    type: string
+                    format: email
+                    example: john.smith@example.com
+                  password:
+                    description: the user's password
+                    type: string 
+      responses:
+        '200':
+          description: User logged in succesfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  schema:
-                    email:
-                      description: email of the user
-                      type: string
-                      format: email
-                      example: john.smith@example.com
-                    password:
-                      description: the user's password
-                      type: string 
-        responses:
-          '200':
-            description: User logged in succesfully
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/User'
-          '400':
-            description: Bad request
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+
   /auth/forgot-password:
     post:
-        description: Request a password reset token/link
-        operationId: forgotPassword
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  schema:
-                    email:
-                      description: email of the user
-                      type: string
-                      format: email
-                      example: john.smith@example.com
-        responses:
-          '202':
-            description: Reset password token sent
-          '400':
-            description: Bad request
+      tags:
+        - Auth
+      description: Request a password reset token/link
+      operationId: forgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  email:
+                    description: email of the user
+                    type: string
+                    format: email
+                    example: john.smith@example.com
+      responses:
+        '202':
+          description: Reset password token sent
+        '400':
+          description: Bad request
+
   /auth/reset-password:
     post:
-        description: Reset the password of a user
-        operationId: resetPassword
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  schema:
-                    nonce:
-                      description: authorization token
-                      type: string
-                    password:
-                      description: the user's new password
-                      type: string 
-        responses:
-          '301':
-            description: Redirect to login page
-          '400':
-            description: Bad request
+      tags:
+        - Auth
+      description: Reset the password of a user
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  nonce:
+                    description: authorization token
+                    type: string
+                  password:
+                    description: the user's new password
+                    type: string 
+      responses:
+        '301':
+          description: Redirect to login page
+        '400':
+          description: Bad request
+
   /auth/verify-email:
     post:
-        description: Verify email address
-        operationId: verifyEmail
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  schema:
-                    nonce:
-                      description: authorization token
-                      type: string
-        responses:
-          '200':
-            description: verified
-          '400':
-            description: Bad request
+      tags:
+        - Auth
+      description: Verify email address
+      operationId: verifyEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  nonce:
+                    description: authorization token
+                    type: string
+      responses:
+        '200':
+          description: verified
+        '400':
+          description: Bad request
+
   /auth/2fa:
     post:
-        description: Multifactor authentication
-        operationId: 2fa
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  schema:
-                    shortCode:
-                      description: 6 digit alfanumeric 2fa code
-                      type: string
-        responses:
-          '200':
-            description: verified
-          '401':
-            description: Unauthorized
+      tags:
+        - Auth
+      description: Multifactor authentication
+      operationId: 2fa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                schema:
+                  shortCode:
+                    description: 6 digit alfanumeric 2fa code
+                    type: string
+      responses:
+        '200':
+          description: verified
+        '401':
+          description: Unauthorized
 
 components:
   schemas:
@@ -174,7 +190,7 @@ components:
             - CLIENT
             - ADMIN
         joinedAt:
-          type: datetime
+          type: date-time
         phoneNumber:
           type: string 
         pictureUrl:
