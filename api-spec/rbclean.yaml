@@ -9,7 +9,7 @@ info:
   title: RB CLEAN
 
 security:
-  - {}
+  - BearerAuth: []  
 
 paths:
   /auth/register:
@@ -50,7 +50,7 @@ paths:
               properties:
                 schema:
                   email:
-                    description: email of the user
+                    description: Email of the user
                     type: string
                     format: email
                     example: john.smith@example.com
@@ -159,6 +159,166 @@ paths:
           description: verified
         '401':
           description: Unauthorized
+    
+  /notifications/push/{id}:
+      get:
+        tags:
+          - Notifications
+        description: Get a unique push notification by ID
+        operationId: getPushNotificationById
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+            description: ID of the push notification to retrieve
+        security:
+          - BearerAuth: []
+        responses:
+          '200':
+            description: Push notification details
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Notification'
+            example:
+              id: "notification_12345"
+              content:
+                title: "Cleaning Complete"
+                body: "Your home cleaning is complete. We hope you are satisfied with the service!"
+              sentAt: "2024-08-10T10:00:00Z"
+          '401':
+            description: Unauthorized
+          '404':
+            description: Notification not found
+  
+  /notifications/push:
+      get:
+        tags:
+          - Notifications
+        description: Get a list of all user's push notifications
+        operationId: getAllPushNotifications
+        parameters:
+          - name: read
+            in: query
+            required: false
+            schema:
+              type: boolean
+            description: Filter notifications by read/unread status
+        security:
+          - BearerAuth: []
+        responses:
+          '200':
+            description: List of push notifications
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Notification'
+          '401':
+            description: Unauthorized
+
+  /notifications/{type}:
+    post:
+      tags:
+        - Notifications
+      description: Send a notification (SMS, EMAIL, or PUSH)
+      operationId: sendNotification
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: 
+              - SMS
+              - EMAIL
+              - PUSH
+          description: Type of notification to send
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      required: true
+                      description: Title of the notification (for EMAIL, SMS, and PUSH)
+                      example: "Verify your email account"
+                    body:
+                      type: string
+                      required: true
+                      description: Body of the notification
+                      example: null
+                    html:
+                      type: string
+                      required: false
+                      description: Message content for EMAIL notifications
+                      example: "<p>Click the link below to verify your account. <a href='https://app.rbclean.xyz/verify?token=eyJhbGciOiJIUzI1NiIs...2YjJiMjBiM2Y0MTYxNGUyNmI1ZWM4OCIsI'>Verify</a></p>"
+              required:
+                - content
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Notification sent successfully
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+
+  /notifications/push/{id}/read:
+    patch:
+      tags:
+        - Notifications
+      description: Mark a push notification as read
+      operationId: markPushNotificationAsRead
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the push notification to mark as read
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Notification marked as read
+        '401':
+          description: Unauthorized
+        '404':
+          description: Notification not found
+
+  /notifications/push/{id}/:
+    delete:
+      tags:
+        - Notifications
+      description: Delete a push notification
+      operationId: deletePushNotification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the push notification to delete
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Notification deleted
+        '401':
+          description: Unauthorized
+        '404':
+          description: Notification not found
 
 #
 # USER SERVICES PATHS STARTS HERE
@@ -309,6 +469,12 @@ paths:
           description: Bad request
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     ApiResponse:
       type: object
@@ -320,6 +486,7 @@ components:
           type: string
         message:
           type: string
+
     User:
       description: A user of our system
       type: object
@@ -421,3 +588,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReportItem'
+
+    Notification:
+      description: A user's push notifications
+      type: object
+      properties:
+        id: 
+          type: string
+        content:
+          type: object
+          properties:
+            title: 
+              type: string
+              required: true
+            body:
+              type: string
+              required: true
+        readStatus:
+          type: boolean
+        sentAt:
+          type: string
+          format: date-time
