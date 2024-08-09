@@ -170,8 +170,6 @@ paths:
         - User
       summary: Get user profile
       operationId: getUserProfile
-      security:
-        - bearerAuth: []
       responses:
         "200":
           description: User profile retrieved
@@ -186,8 +184,6 @@ paths:
         - User
       summary: Update user profile
       operationId: updateUserProfile
-      security:
-        - bearerAuth: []
       requestBody:
         content:
           application/json:
@@ -205,8 +201,6 @@ paths:
         - User
       summary: Delete user account
       operationId: deleteUserAccount
-      security:
-        - bearerAuth: []
       responses:
         "204":
           description: Account deleted
