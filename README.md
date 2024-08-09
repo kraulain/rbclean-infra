@@ -50,6 +50,18 @@ __table of content__
 
   - The numbering is with respect to the issue number your are working on
 
+- When creating a `PR`;
+
+  - If that pr is for an existing `issue`, be sure to tag the issue in the PR description, to auto-close the issue if it's approved, you can use any of these commands
+
+    - `Resolves #<issue_number>`
+
+    - `Fixes #<issue_number>` or
+
+    - `Closes #<issue_number>`
+  
+  - Always assign the PR to yourself and your team-mate
+
 - ### API tags
 
   - Auth
