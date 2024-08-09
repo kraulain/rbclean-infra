@@ -160,6 +160,59 @@ paths:
         '401':
           description: Unauthorized
 
+#
+# USER SERVICES PATHS STARTS HERE
+#
+
+  /profile:
+    get:
+      tags:
+        - User
+      summary: Get user profile
+      operationId: getUserProfile
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+    put:
+      tags:
+        - User
+      summary: Update user profile
+      operationId: updateUserProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Profile updated
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+    delete:
+      tags:
+        - User
+      summary: Delete user account
+      operationId: deleteUserAccount
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Account deleted
+        "401":
+          description: Unauthorized
+
 components:
   schemas:
     ApiResponse:
@@ -197,3 +250,28 @@ components:
           type: string
         address:
           type: string
+        sex:
+          type: string 
+          enum: [Male,Female]
+          required: false
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          required: false
+        phoneNumber:
+          type: string
+          required: false
+        pictureUrl:
+          type: string
+          required: false
+        address:
+          type: string
+          required: false
+        sex:
+          type: string 
+          enum: [Male,Female]
+          required: false
+      
