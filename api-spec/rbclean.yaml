@@ -469,20 +469,24 @@ paths:
           description: Bad request
 
 # order requests
-  /orders/create:
+  /orders:
     post: 
         tags:
-          - Order
+          - Orders
         summary: create a new order
         operationId: createOrder
         security:
          - bearerAuth: []
         description: creating new order this action can online only be performed by login users
+        parameters:
+          - name: user_id
+            in: path
+            required: true
         requestBody:
           content: 
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/CreateOrder'
         responses:
          '201':
             description: Order created successfully
@@ -493,10 +497,10 @@ paths:
          '400':
             description: Bad request
 
-  /orders/update/{id}:
-    put: 
+  /orders/{order_id}:
+    put:
       tags:
-        - Order
+        - Orders
       summary: update an existing order
       operationId: updateOrder
       security: 
@@ -532,12 +536,17 @@ paths:
        '404':
           description: Order not found
 
-  /orders/getAll: 
+  /orders/: 
     get:
       tags:
-        - Order
+        - Orders
       operationId: getAllOrders
       summary: get all orders
+      parameters:
+      - name: status
+      - name: user_id
+      - name: agent_id
+        in: query
       security: 
         - bearerAuth: []
       description: "get a list of all orders"
@@ -556,7 +565,7 @@ paths:
   /orders/{id}:
     get: 
       tags:
-        - Order
+        - Orders
       summary: get order by id
       description: get Orders by ID
       operationId: getOrderById 
@@ -581,109 +590,11 @@ paths:
         '404':
           description: Order not found
 
-  /orders/getByStatus:
-    get:
-      tags:
-        - Order
-      summary: filter orders base on their status
-      description: filter order by status Multiple status values can be provided with comma separated strings
-      operationId: getOrderByStatus
-      security: 
-        - bearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          description: Status values that need to be considered for filter
-          required: false
-          explode: true
-          schema:
-            type: string
-            default: pending
-            enum:
-              - pending
-              - confirmed
-              - in_progress
-              - completed
-              - canceled
-              - delivered
-      responses:
-       '200':
-        description: successful operation
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Order'          
-       '400':
-          description: Invalid status value
-       '404':
-          description: Orders not found
 
-  /orders/getByUserId/{user_id}:
-    get:
-      tags:
-        - Order
-      summary: get all client's orders
-      operationId: getOrderByUser_id
-      security: 
-        - bearerAuth: []
-      description: get all client's(user's) orders by their IDs 
-      parameters:
-        - name: user_id
-          in: path
-          description: ID of the user whose orders will be returned
-          required: true
-          schema: 
-              type: string
-      responses: 
-          '200':
-            description: successful operation
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Order'          
-          '400':
-            description: bad request
-          '404':
-            description: Order not found
-
-  /orders/getByAgentId/{agent_id}:
-    get:
-      tags:
-        - Order
-      summary: get all orders assigned to agent
-      operationId: getOrderByUser_id
-      security: 
-        - bearerAuth: []
-      description: get all orders by their agent_id 
-      parameters:
-        - name: agent_id
-          in: path
-          description: ID of the agent_id whose is in charge of the orders to be returned
-          required: true
-          schema: 
-              type: string
-      responses: 
-          '200':
-            description: successful operation
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Order'          
-          '400':
-            description: bad request
-          '404':
-            description: Order not found
-
-  /orders/{order_id}:
+  /orders/{order_id}/:
     delete:
       tags:
-        - Order
+        - Orders
       summary: Delete order
       operationId: deleteOrder
       security: 
@@ -875,6 +786,7 @@ components:
           type: string
         address: 
           type: string
+
     UpdateOrder:
       description: update order data details
       type: object
@@ -891,4 +803,30 @@ components:
         image_url: 
           type: string
         address: 
-          type: string    
+          type: string  
+
+    CreateOrder:
+      description: cleaning service order details
+      type: object
+      properties: 
+        id: 
+          type: string
+        argent_id: 
+          type: string
+          required: ["true"]
+        service_type: 
+          type: string
+          required: ["BASIC_CLEANING", "DRY_CLEANING", "PRESSING", "DEEP_CLEANING"]
+        status: 
+          type: string
+          required : ['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELED', "DELIVERED"]
+        ordered_on: 
+          type: "dateTime"
+          example:  "2010-01-12T05:23:19+0000"
+        description:
+          type: string
+          required: ["true"]
+        image_url: 
+          type: string
+        address: 
+          type: string  
